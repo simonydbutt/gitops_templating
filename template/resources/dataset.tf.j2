@@ -1,0 +1,27 @@
+resource "google_bigquery_dataset" "{{ config.dataset_id }}" {
+  dataset_id    = "{{ config.dataset_id }}"
+  friendly_name = "{{ config.friendly_name if config.friendly_name else config.dataset_id }}"
+  {% if config.description %}
+    description = "{{ config.description}}"
+  {% endif %}
+  location      = "{{ common.location }}"
+  {% if config.labels %}
+    labels = {
+      {% for label_key, label_val in config.labels.items() %}
+        {{ label_key }}: "{{ label_val }}"
+      {% endfor %}
+    }
+  {% endif %}
+  {% if config.iam %}
+    {% for iam_block in config.iam %}
+      access {
+        role = "roles/bigquery.{{ iam_block.role }}"
+        {% if "group" in iam_block.keys() %}
+          special_group = "{{ iam_block.group }}"
+        {% else %}
+          user_by_email = "{{ iam_block.user_email }}"
+        {% endif %}
+      }
+    {% endfor %}
+  {% endif %}
+}

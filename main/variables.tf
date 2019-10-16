@@ -11,6 +11,6 @@ variable "region" {
 variable "enabled_services" {
   type = "list"
   default = [
-    "bigquery.googleapis.com"
+    "bigquery"
   ]
 }
